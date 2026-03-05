@@ -2,62 +2,79 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>IP Opener - Force Firefox</title>
+    <title>IP Opener - Final Force</title>
     <style>
-        body { font-family: sans-serif; background: #0f172a; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .card { background: #1e293b; padding: 30px; border-radius: 15px; border: 1px solid #334155; text-align: center; width: 350px; }
-        input { width: 100%; padding: 12px; margin-bottom: 20px; border-radius: 6px; border: 2px solid #3b82f6; background: #0f172a; color: #fff; font-size: 1.1rem; text-align: center; box-sizing: border-box; }
-        .grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0b0f19; color: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: #161b22; padding: 30px; border-radius: 12px; border: 1px solid #30363d; width: 380px; text-align: center; }
+        input { width: 100%; padding: 12px; margin-bottom: 20px; border-radius: 6px; border: 1px solid #3b82f6; background: #0d1117; color: #58a6ff; font-size: 1.2rem; text-align: center; box-sizing: border-box; }
+        .btn-main { width: 100%; background: #238636; color: white; border: none; padding: 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1rem; margin-bottom: 20px; }
+        .btn-main:hover { background: #2ea043; }
         
-        /* Botão estilizado */
-        .btn-trigger {
-            background: #3b82f6; color: white; border: none; padding: 15px; border-radius: 8px;
-            cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.2s; width: 100%;
-            margin-bottom: 5px;
-        }
-        .btn-trigger:hover { background: #2563eb; }
-        .desc { font-size: 10px; color: #94a3b8; margin-bottom: 10px; }
+        /* Links invisíveis que vamos usar para 'enganar' o Firefox */
+        .hidden-links { display: none; }
+        
+        .status { font-size: 12px; color: #8b949e; }
+        .step { color: #f85149; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h3>IP Opener (Force Mode)</h3>
-    <input type="text" id="ipInput" placeholder="Digite o IP aqui">
+    <h3>IP Opener (Mozilla Edition)</h3>
+    <input type="text" id="ipInput" placeholder="Ex: 192.168.0.1">
     
-    <div class="grid">
-        <div>
-            <div class="desc">Abre as 4 variantes em sequência</div>
-            <button onclick="forçarAbertura()" class="btn-trigger">ABRIR TUDO (FORCE)</button>
-        </div>
+    <button onclick="dispararSequencia()" class="btn-main">ABRIR 4 VARIANTES</button>
+
+    <div class="status">
+        <p id="msg">Aguardando comando...</p>
+        <p class="step">Se falhar, clique no ícone de bloqueio na barra de URL e permita pop-ups.</p>
+    </div>
+
+    <div class="hidden-links">
+        <a id="l1" target="_blank">1</a>
+        <a id="l2" target="_blank">2</a>
+        <a id="l3" target="_blank">3</a>
+        <a id="l4" target="_blank">4</a>
     </div>
 </div>
 
-<form id="ghostForm" target="_blank" method="GET" style="display:none;"></form>
-
 <script>
-    function forçarAbertura() {
+    function dispararSequencia() {
         let ip = document.getElementById('ipInput').value.trim();
         ip = ip.replace(/^(https?:\/\/)/, "");
         
-        if (ip.length < 7) return alert("Digite um IP válido");
+        if (ip.length < 7) {
+            alert("Insira um IP válido.");
+            return;
+        }
 
-        const variantes = [
+        const msg = document.getElementById('msg');
+        const urls = [
             "http://" + ip,
             "https://" + ip,
             "https://" + ip + ":8082",
             "http://" + ip + ":8082"
         ];
 
-        const form = document.getElementById('ghostForm');
+        // Mapeia os links ocultos
+        const links = [
+            document.getElementById('l1'),
+            document.getElementById('l2'),
+            document.getElementById('l3'),
+            document.getElementById('l4')
+        ];
 
-        variantes.forEach((url, index) => {
+        // O Firefox exige um intervalo maior para não considerar spam
+        // Vamos usar 1 segundo (1000ms) entre cada aba
+        urls.forEach((url, i) => {
             setTimeout(() => {
-                // Em vez de window.open, mudamos a ação do formulário e "submetemos"
-                form.action = url;
-                form.submit();
-            }, index * 600); // O delay é essencial para o Firefox não ignorar os envios
+                msg.innerText = "Abrindo: " + url;
+                links[i].href = url;
+                links[i].click(); // Simula o clique físico no link real
+            }, i * 1200); 
         });
+
+        setTimeout(() => { msg.innerText = "Concluído!"; }, 5000);
     }
 </script>
 
