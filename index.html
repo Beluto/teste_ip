@@ -2,122 +2,56 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IP Multi-Tab Opener</title>
+    <title>IP Opener Pro</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #0f172a;
-            color: #f8fafc;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .container {
-            background-color: #1e293b;
-            padding: 2.5rem;
-            border-radius: 16px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
-            width: 100%;
-            max-width: 450px;
-            text-align: center;
-            border: 1px solid #334155;
-        }
-        h1 { font-size: 1.5rem; margin-bottom: 1rem; color: #3b82f6; }
-        p { color: #94a3b8; font-size: 0.9rem; margin-bottom: 1.5rem; }
-        
-        input {
-            width: 100%;
-            padding: 14px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            border: 2px solid #334155;
-            background: #0f172a;
-            color: #fff;
-            font-size: 1.1rem;
-            text-align: center;
-            outline: none;
-            transition: border-color 0.3s;
-        }
-        input:focus { border-color: #3b82f6; }
-
-        button {
-            width: 100%;
-            background-color: #3b82f6;
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: background 0.2s, transform 0.1s;
-        }
-        button:hover { background-color: #2563eb; }
-        button:active { transform: scale(0.98); }
-
-        .warning {
-            margin-top: 20px;
-            padding: 10px;
-            background: rgba(245, 158, 11, 0.1);
-            border-radius: 6px;
-            color: #f59e0b;
-            font-size: 0.8rem;
-            border: 1px solid rgba(245, 158, 11, 0.3);
-        }
+        body { font-family: sans-serif; background: #1a1a1a; color: white; text-align: center; padding-top: 50px; }
+        .box { background: #333; padding: 30px; border-radius: 15px; display: inline-block; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        input { padding: 12px; width: 250px; border-radius: 5px; border: none; font-size: 16px; }
+        button { padding: 12px 25px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        button:hover { background: #218838; }
+        .aviso { color: #ffc107; margin-top: 20px; font-size: 13px; max-width: 350px; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>Gerador de Acessos IP</h1>
-    <p>Cole o IP abaixo para abrir as 4 variantes simultaneamente.</p>
-    
-    <input type="text" id="ipInput" placeholder="Ex: 192.168.1.1" autocomplete="off">
-    
-    <button onclick="dispararAbas()">Abrir 4 Variantes</button>
-
-    <div class="warning">
-        <strong>Importante:</strong> Se apenas uma aba abrir, clique no ícone de "Pop-up bloqueado" na barra de endereços e selecione <b>"Sempre permitir"</b>.
+<div class="box">
+    <h2>Abrir 4 Abas de IP</h2>
+    <input type="text" id="ipInput" placeholder="Cole o IP aqui (ex: 192.168.0.1)">
+    <br>
+    <button onclick="abrirTudo()">ABRIR ABASagora</button>
+    <div class="aviso">
+        ⚠️ <b>IMPORTANTE:</b> Após clicar, verifique o aviso de "Pop-up Bloqueado" no topo do navegador e clique em <b>PERMITIR</b>.
     </div>
 </div>
 
 <script>
-    function dispararAbas() {
-        let ip = document.getElementById('ipInput').value.trim();
+    function abrirTudo() {
+        let rawIp = document.getElementById('ipInput').value.trim();
+        
+        // Remove http:// ou https:// se o usuário colar junto
+        let ip = rawIp.replace(/^(https?:\/\/)/, "");
 
-        // Limpa o IP caso o usuário cole com http:// ou https:// acidentalmente
-        ip = ip.replace(/^(https?:\/\/)/, "");
-
-        if (ip === "") {
-            alert("Por favor, insira um endereço IP.");
+        if (!ip) {
+            alert("Cole um IP válido!");
             return;
         }
 
-        // Definição das 4 URLs solicitadas
-        const urls = [
-            `http://${ip}`,             // Somente IP (padrão HTTP)
-            `https://${ip}`,            // Somente IP (HTTPS)
-            `https://${ip}:8082`,       // IP com HTTPS e Porta 8082
-            `http://${ip}:8082`         // IP com Porta 8082 (HTTP)
+        // Variantes conforme seu pedido
+        const links = [
+            "http://" + ip,                // Somente o IP
+            "https://" + ip,               // HTTPS + IP
+            "https://" + ip + ":8082",     // HTTPS + IP + 8082
+            "http://" + ip + ":8082"       // IP + 8082 (Somente 8082)
         ];
 
-        // Abre cada URL em uma nova aba
-        urls.forEach(url => {
-            window.open(url, '_blank');
+        // Tenta abrir as janelas
+        links.forEach((url, index) => {
+            // O pequeno 'timeout' ajuda alguns navegadores a não travarem
+            setTimeout(() => {
+                window.open(url, '_blank');
+            }, index * 200); 
         });
     }
-
-    // Permite disparar ao apertar a tecla "Enter"
-    document.getElementById('ipInput').addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-            dispararAbas();
-        }
-    });
 </script>
 
 </body>
