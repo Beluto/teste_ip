@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>IP Opener - Legacy Browser Fix</title>
+    <style>
+        body { font-family: sans-serif; background: #1a1a1a; color: white; text-align: center; padding: 20px; }
+        .card { background: #333; padding: 20px; border-radius: 10px; display: inline-block; border: 1px solid #555; }
+        input { padding: 10px; width: 250px; border-radius: 4px; border: 1px solid #777; font-size: 16px; margin-bottom: 15px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        
+        /* Botão que parece um botão de sistema antigo para o Mozilla reconhecer */
+        .btn-submit {
+            width: 150px; padding: 12px 5px; cursor: pointer;
+            background: #444; color: #fff; border: 2px solid #666;
+            font-weight: bold; font-size: 11px;
+        }
+        .btn-submit:hover { background: #555; border-color: #888; }
+        
+        form { margin: 0; padding: 0; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h3>IP Opener (Modo Direto)</h3>
+        <p style="font-size: 12px; color: #ccc;">1. Cole o IP | 2. Clique em GERAR | 3. Clique nos botões</p>
+        
+        <input type="text" id="ipInput" placeholder="Ex: 192.168.0.1">
+        <br>
+        <button onclick="configurarBotoes()" style="padding: 8px 20px; cursor: pointer;">GERAR BOTÕES</button>
+
+        <div id="areaBotoes" class="grid hidden">
+            <form id="form1" target="_blank">
+                <input type="submit" value="ABRIR HTTP" class="btn-submit">
+            </form>
+
+            <form id="form2" target="_blank">
+                <input type="submit" value="ABRIR HTTPS" class="btn-submit">
+            </form>
+
+            <form id="form3" target="_blank">
+                <input type="submit" value="HTTPS :8082" class="btn-submit">
+            </form>
+
+            <form id="form4" target="_blank">
+                <input type="submit" value="HTTP :8082" class="btn-submit">
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function configurarBotoes() {
+            var ip = document.getElementById('ipInput').value.trim();
+            ip = ip.replace(/^(https?:\/\/)/, "");
+
+            if (ip.length < 7) {
+                alert("IP inválido");
+                return;
+            }
+
+            // Atribui as URLs diretamente ao atributo 'action' dos formulários
+            document.getElementById('form1').action = "http://" + ip;
+            document.getElementById('form2').action = "https://" + ip;
+            document.getElementById('form3').action = "https://" + ip + ":8082";
+            document.getElementById('form4').action = "http://" + ip + ":8082";
+
+            // Mostra os botões
+            document.getElementById('areaBotoes').className = "grid";
+        }
+    </script>
+</body>
+</html>
