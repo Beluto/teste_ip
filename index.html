@@ -1,132 +1,56 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<title>IP Opener - Compatível</title>
-
-<style>
-body{
-    font-family: Arial, sans-serif;
-    background:#222;
-    color:#fff;
-    padding:20px;
-    text-align:center;
-}
-
-input{
-    padding:10px;
-    width:300px;
-    font-size:16px;
-    border-radius:5px;
-    border:none;
-}
-
-button{
-    padding:10px 20px;
-    background:#007bff;
-    color:white;
-    border:none;
-    border-radius:5px;
-    cursor:pointer;
-    margin-left:10px;
-}
-
-button:hover{
-    background:#0056b3;
-}
-
-.grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:20px;
-    margin-top:30px;
-}
-
-.frame-container{
-    background:#333;
-    border:1px solid #555;
-    padding:10px;
-    border-radius:8px;
-}
-
-h4{
-    margin:5px 0;
-    font-size:12px;
-    color:#aaa;
-}
-
-iframe{
-    width:100%;
-    height:250px;
-    background:#fff;
-    border:none;
-    border-radius:4px;
-}
-</style>
+    <meta charset="UTF-8">
+    <title>IP Opener - Legacy Mode</title>
+    <style>
+        body { font-family: sans-serif; background: #222; color: #fff; padding: 20px; text-align: center; }
+        input { padding: 10px; width: 300px; font-size: 16px; border-radius: 5px; border: none; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px; }
+        .frame-container { background: #333; border: 1px solid #555; padding: 10px; border-radius: 8px; }
+        h4 { margin: 5px 0; font-size: 12px; color: #aaa; }
+        iframe { width: 100%; height: 250px; background: #fff; border: none; border-radius: 4px; }
+    </style>
 </head>
-
 <body>
 
-<h2>IP Opener (Modo Compatibilidade)</h2>
+    <h2>IP Opener (Modo Compatibilidade)</h2>
+    <input type="text" id="ipInput" placeholder="Digite o IP (ex: 192.168.0.1)">
+    <button onclick="carregarFrames()">CARREGAR TUDO</button>
 
-<input type="text" id="ipInput" placeholder="Digite o IP (ex: 192.168.0.1)">
-<button id="btnCarregar">CARREGAR TUDO</button>
+    <div class="grid">
+        <div class="frame-container">
+            <h4>HTTP (Padrão)</h4>
+            <iframe id="f1"></iframe>
+        </div>
+        <div class="frame-container">
+            <h4>HTTPS</h4>
+            <iframe id="f2"></iframe>
+        </div>
+        <div class="frame-container">
+            <h4>HTTPS :8082</h4>
+            <iframe id="f3"></iframe>
+        </div>
+        <div class="frame-container">
+            <h4>HTTP :8082</h4>
+            <iframe id="f4"></iframe>
+        </div>
+    </div>
 
-<div class="grid">
+    <script>
+        function carregarFrames() {
+            let ip = document.getElementById('ipInput').value.trim();
+            ip = ip.replace(/^(https?:\/\/)/, "");
 
-<div class="frame-container">
-<h4>HTTP (Padrão)</h4>
-<iframe id="f1"></iframe>
-</div>
+            if (!ip) return alert("Insira o IP");
 
-<div class="frame-container">
-<h4>HTTPS</h4>
-<iframe id="f2"></iframe>
-</div>
-
-<div class="frame-container">
-<h4>HTTPS :8082</h4>
-<iframe id="f3"></iframe>
-</div>
-
-<div class="frame-container">
-<h4>HTTP :8082</h4>
-<iframe id="f4"></iframe>
-</div>
-
-</div>
-
-<script>
-
-function limparIP(ip){
-    ip = ip.trim();
-
-    ip = ip.replace("http://","");
-    ip = ip.replace("https://","");
-
-    return ip;
-}
-
-function carregarFrames(){
-
-    let ip = document.getElementById("ipInput").value;
-
-    ip = limparIP(ip);
-
-    if(ip === ""){
-        alert("Insira um IP válido");
-        return;
-    }
-
-    document.getElementById("f1").src = "http://" + ip;
-    document.getElementById("f2").src = "https://" + ip;
-    document.getElementById("f3").src = "https://" + ip + ":8082";
-    document.getElementById("f4").src = "http://" + ip + ":8082";
-}
-
-document.getElementById("btnCarregar").addEventListener("click",carregarFrames);
-
-</script>
-
+            // Atualiza o src de cada iframe
+            document.getElementById('f1').src = "http://" + ip;
+            document.getElementById('f2').src = "https://" + ip;
+            document.getElementById('f3').src = "https://" + ip + ":8082";
+            document.getElementById('f4').src = "http://" + ip + ":8082";
+        }
+    </script>
 </body>
 </html>
