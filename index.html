@@ -2,81 +2,55 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>IP Opener - Final Force</title>
+    <title>IP Opener - Legacy Mode</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #0b0f19; color: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: #161b22; padding: 30px; border-radius: 12px; border: 1px solid #30363d; width: 380px; text-align: center; }
-        input { width: 100%; padding: 12px; margin-bottom: 20px; border-radius: 6px; border: 1px solid #3b82f6; background: #0d1117; color: #58a6ff; font-size: 1.2rem; text-align: center; box-sizing: border-box; }
-        .btn-main { width: 100%; background: #238636; color: white; border: none; padding: 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1rem; margin-bottom: 20px; }
-        .btn-main:hover { background: #2ea043; }
-        
-        /* Links invisíveis que vamos usar para 'enganar' o Firefox */
-        .hidden-links { display: none; }
-        
-        .status { font-size: 12px; color: #8b949e; }
-        .step { color: #f85149; font-weight: bold; }
+        body { font-family: sans-serif; background: #222; color: #fff; padding: 20px; text-align: center; }
+        input { padding: 10px; width: 300px; font-size: 16px; border-radius: 5px; border: none; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px; }
+        .frame-container { background: #333; border: 1px solid #555; padding: 10px; border-radius: 8px; }
+        h4 { margin: 5px 0; font-size: 12px; color: #aaa; }
+        iframe { width: 100%; height: 250px; background: #fff; border: none; border-radius: 4px; }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h3>IP Opener (Mozilla Edition)</h3>
-    <input type="text" id="ipInput" placeholder="Ex: 192.168.0.1">
-    
-    <button onclick="dispararSequencia()" class="btn-main">ABRIR 4 VARIANTES</button>
+    <h2>IP Opener (Modo Compatibilidade)</h2>
+    <input type="text" id="ipInput" placeholder="Digite o IP (ex: 192.168.0.1)">
+    <button onclick="carregarFrames()">CARREGAR TUDO</button>
 
-    <div class="status">
-        <p id="msg">Aguardando comando...</p>
-        <p class="step">Se falhar, clique no ícone de bloqueio na barra de URL e permita pop-ups.</p>
+    <div class="grid">
+        <div class="frame-container">
+            <h4>HTTP (Padrão)</h4>
+            <iframe id="f1"></iframe>
+        </div>
+        <div class="frame-container">
+            <h4>HTTPS</h4>
+            <iframe id="f2"></iframe>
+        </div>
+        <div class="frame-container">
+            <h4>HTTPS :8082</h4>
+            <iframe id="f3"></iframe>
+        </div>
+        <div class="frame-container">
+            <h4>HTTP :8082</h4>
+            <iframe id="f4"></iframe>
+        </div>
     </div>
 
-    <div class="hidden-links">
-        <a id="l1" target="_blank">1</a>
-        <a id="l2" target="_blank">2</a>
-        <a id="l3" target="_blank">3</a>
-        <a id="l4" target="_blank">4</a>
-    </div>
-</div>
+    <script>
+        function carregarFrames() {
+            let ip = document.getElementById('ipInput').value.trim();
+            ip = ip.replace(/^(https?:\/\/)/, "");
 
-<script>
-    function dispararSequencia() {
-        let ip = document.getElementById('ipInput').value.trim();
-        ip = ip.replace(/^(https?:\/\/)/, "");
-        
-        if (ip.length < 7) {
-            alert("Insira um IP válido.");
-            return;
+            if (!ip) return alert("Insira o IP");
+
+            // Atualiza o src de cada iframe
+            document.getElementById('f1').src = "http://" + ip;
+            document.getElementById('f2').src = "https://" + ip;
+            document.getElementById('f3').src = "https://" + ip + ":8082";
+            document.getElementById('f4').src = "http://" + ip + ":8082";
         }
-
-        const msg = document.getElementById('msg');
-        const urls = [
-            "http://" + ip,
-            "https://" + ip,
-            "https://" + ip + ":8082",
-            "http://" + ip + ":8082"
-        ];
-
-        // Mapeia os links ocultos
-        const links = [
-            document.getElementById('l1'),
-            document.getElementById('l2'),
-            document.getElementById('l3'),
-            document.getElementById('l4')
-        ];
-
-        // O Firefox exige um intervalo maior para não considerar spam
-        // Vamos usar 1 segundo (1000ms) entre cada aba
-        urls.forEach((url, i) => {
-            setTimeout(() => {
-                msg.innerText = "Abrindo: " + url;
-                links[i].href = url;
-                links[i].click(); // Simula o clique físico no link real
-            }, i * 1200); 
-        });
-
-        setTimeout(() => { msg.innerText = "Concluído!"; }, 5000);
-    }
-</script>
-
+    </script>
 </body>
 </html>
