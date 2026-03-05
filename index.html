@@ -2,128 +2,59 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IP Multi-Opener Pro</title>
+    <title>IP Opener - Manual Force</title>
     <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #0f172a;
-            color: #f8fafc;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .card {
-            background-color: #1e293b;
-            padding: 30px;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-            border: 1px solid #334155;
-        }
-        h2 { color: #3b82f6; margin-bottom: 10px; }
-        p { color: #94a3b8; font-size: 0.9rem; margin-bottom: 20px; }
-        
-        input {
-            width: 100%;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            border: 2px solid #334155;
-            background: #0f172a;
-            color: #fff;
-            font-size: 1rem;
-            box-sizing: border-box;
-            outline: none;
-        }
-        input:focus { border-color: #3b82f6; }
-
-        button {
-            width: 100%;
-            background-color: #10b981;
-            color: white;
-            border: none;
-            padding: 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 1rem;
-            transition: 0.3s;
-        }
-        button:hover { background-color: #059669; transform: translateY(-2px); }
-        
-        .status {
-            margin-top: 20px;
-            font-size: 0.85rem;
-            padding: 10px;
-            background: rgba(59, 130, 246, 0.1);
-            border-radius: 5px;
-            color: #60a5fa;
-            display: none;
-        }
+        body { font-family: sans-serif; background: #0f172a; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: #1e293b; padding: 30px; border-radius: 12px; width: 400px; text-align: center; border: 1px solid #334155; }
+        input { width: 100%; padding: 12px; margin-bottom: 20px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
+        .grid-botoes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; display: none; }
+        .btn-link { background: #3b82f6; color: white; border: none; padding: 15px 5px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: bold; text-decoration: none; }
+        .btn-link:hover { background: #2563eb; }
+        .btn-link.https { background: #8b5cf6; }
+        .btn-link.port { background: #f59e0b; }
+        h3 { margin-top: 0; color: #60a5fa; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>IP Multi-Opener</h2>
-    <p>Insira o IP para abrir as 4 variações:</p>
+    <h3>IP Opener</h3>
+    <p>Cole o IP e clique nos botões que surgirem:</p>
+    <input type="text" id="ipInput" placeholder="Ex: 192.168.0.1" oninput="gerarBotoes()">
     
-    <input type="text" id="ipInput" placeholder="Ex: 192.168.0.1" autocomplete="off">
-    
-    <button onclick="executarAbertura()">ABRIR TODAS AS ABAS</button>
-
-    <div id="statusBox" class="status">
-        Processando... verifique os pop-ups!
+    <div id="grid" class="grid-botoes">
+        <a id="link1" target="_blank" class="btn-link">HTTP Padrão</a>
+        <a id="link2" target="_blank" class="btn-link https">HTTPS</a>
+        <a id="link3" target="_blank" class="btn-link port">HTTPS :8082</a>
+        <a id="link4" target="_blank" class="btn-link port">HTTP :8082</a>
     </div>
 </div>
 
 <script>
-    function executarAbertura() {
+    function gerarBotoes() {
         let ip = document.getElementById('ipInput').value.trim();
-        const statusBox = document.getElementById('statusBox');
-
-        // Limpa o IP de eventuais protocolos já colados
         ip = ip.replace(/^(https?:\/\/)/, "");
+        
+        const grid = document.getElementById('grid');
+        
+        if (ip.length > 7) { // Mínimo para um IP válido
+            grid.style.display = 'grid';
+            
+            document.getElementById('link1').href = "http://" + ip;
+            document.getElementById('link1').innerText = "Abrir http://" + ip;
 
-        if (!ip) {
-            alert("Por favor, cole um IP.");
-            return;
+            document.getElementById('link2').href = "https://" + ip;
+            document.getElementById('link2').innerText = "Abrir https://" + ip;
+
+            document.getElementById('link3').href = "https://" + ip + ":8082";
+            document.getElementById('link3').innerText = "Abrir HTTPS :8082";
+
+            document.getElementById('link4').href = "http://" + ip + ":8082";
+            document.getElementById('link4').innerText = "Abrir HTTP :8082";
+        } else {
+            grid.style.display = 'none';
         }
-
-        statusBox.style.display = "block";
-
-        // As 4 URLs solicitadas
-        const urls = [
-            `http://${ip}`,             // IP Puro
-            `https://${ip}`,            // HTTPS IP
-            `https://${ip}:8082`,       // HTTPS IP 8082
-            `http://${ip}:8082`         // IP 8082
-        ];
-
-        // O segredo está aqui: um loop com um pequeno atraso (setTimeout)
-        // Isso ajuda a "enganar" o bloqueador de spam do navegador
-        urls.forEach((url, index) => {
-            setTimeout(() => {
-                const win = window.open(url, '_blank');
-                
-                // Se win for nulo, é porque o navegador bloqueou
-                if (!win) {
-                    statusBox.innerHTML = "⚠️ Pop-ups bloqueados! Ative-os na barra de endereços.";
-                    statusBox.style.color = "#fbbf24";
-                }
-            }, index * 400); // Abre uma a cada 0.4 segundos
-        });
     }
-
-    // Atalho para o Enter
-    document.getElementById('ipInput').addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') executarAbertura();
-    });
 </script>
 
 </body>
