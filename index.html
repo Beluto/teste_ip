@@ -2,57 +2,57 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>IP Opener - Firefox Fix</title>
+    <title>IP Opener - Manual Force</title>
     <style>
-        body { font-family: sans-serif; background: #111; color: #eee; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: #222; padding: 25px; border-radius: 12px; width: 400px; text-align: center; border: 1px solid #444; }
-        input { width: 100%; padding: 12px; margin-bottom: 20px; border-radius: 6px; border: 1px solid #555; background: #000; color: #0f0; font-family: monospace; font-size: 18px; text-align: center; box-sizing: border-box; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .btn { 
-            background: #444; color: white; border: none; padding: 15px 5px; border-radius: 6px; 
-            cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.2s;
-            text-transform: uppercase;
-        }
-        .btn:hover { background: #666; }
-        .btn.active { background: #007bff; }
-        .btn.https.active { background: #6f42c1; }
-        .btn.port.active { background: #fd7e14; }
+        body { font-family: sans-serif; background: #0f172a; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: #1e293b; padding: 30px; border-radius: 12px; width: 400px; text-align: center; border: 1px solid #334155; }
+        input { width: 100%; padding: 12px; margin-bottom: 20px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
+        .grid-botoes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; display: none; }
+        .btn-link { background: #3b82f6; color: white; border: none; padding: 15px 5px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: bold; text-decoration: none; }
+        .btn-link:hover { background: #2563eb; }
+        .btn-link.https { background: #8b5cf6; }
+        .btn-link.port { background: #f59e0b; }
+        h3 { margin-top: 0; color: #60a5fa; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h3>IP Opener (Firefox Ready)</h3>
-    <input type="text" id="ipInput" placeholder="0.0.0.0" oninput="validar()">
+    <h3>IP Opener</h3>
+    <p>Cole o IP e clique nos botões que surgirem:</p>
+    <input type="text" id="ipInput" placeholder="Ex: 192.168.0.1" oninput="gerarBotoes()">
     
-    <div class="grid">
-        <button onclick="ir('http://')" id="b1" class="btn">HTTP</button>
-        <button onclick="ir('https://')" id="b2" class="btn https">HTTPS</button>
-        <button onclick="ir('https://', ':8082')" id="b3" class="btn port">HTTPS :8082</button>
-        <button onclick="ir('http://', ':8082')" id="b4" class="btn port">HTTP :8082</button>
+    <div id="grid" class="grid-botoes">
+        <a id="link1" target="_blank" class="btn-link">HTTP Padrão</a>
+        <a id="link2" target="_blank" class="btn-link https">HTTPS</a>
+        <a id="link3" target="_blank" class="btn-link port">HTTPS :8082</a>
+        <a id="link4" target="_blank" class="btn-link port">HTTP :8082</a>
     </div>
-    <p style="font-size: 11px; color: #888; margin-top: 15px;">Se não abrir, verifique a barra amarela de "Pop-up" no topo do Firefox.</p>
 </div>
 
 <script>
-    function validar() {
+    function gerarBotoes() {
         let ip = document.getElementById('ipInput').value.trim();
-        let btns = document.querySelectorAll('.btn');
-        if(ip.length > 6) {
-            btns.forEach(b => b.classList.add('active'));
-        } else {
-            btns.forEach(b => b.classList.remove('active'));
-        }
-    }
-
-    function ir(protocolo, porta = "") {
-        let ip = document.getElementById('ipInput').value.trim();
-        ip = ip.replace(/^(https?:\/\/)/, ""); // Limpa o IP
+        ip = ip.replace(/^(https?:\/\/)/, "");
         
-        if (ip.length > 6) {
-            const url = protocolo + ip + porta;
-            // No Firefox, window.open funciona melhor se for a única ação do clique
-            window.open(url, '_blank', 'noopener,noreferrer');
+        const grid = document.getElementById('grid');
+        
+        if (ip.length > 7) { // Mínimo para um IP válido
+            grid.style.display = 'grid';
+            
+            document.getElementById('link1').href = "http://" + ip;
+            document.getElementById('link1').innerText = "Abrir http://" + ip;
+
+            document.getElementById('link2').href = "https://" + ip;
+            document.getElementById('link2').innerText = "Abrir https://" + ip;
+
+            document.getElementById('link3').href = "https://" + ip + ":8082";
+            document.getElementById('link3').innerText = "Abrir HTTPS :8082";
+
+            document.getElementById('link4').href = "http://" + ip + ":8082";
+            document.getElementById('link4').innerText = "Abrir HTTP :8082";
+        } else {
+            grid.style.display = 'none';
         }
     }
 </script>
