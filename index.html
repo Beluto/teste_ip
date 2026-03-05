@@ -2,55 +2,60 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>IP Opener - Legacy Mode</title>
+    <title>IP Opener - Firefox Fix</title>
     <style>
-        body { font-family: sans-serif; background: #222; color: #fff; padding: 20px; text-align: center; }
-        input { padding: 10px; width: 300px; font-size: 16px; border-radius: 5px; border: none; }
-        button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px; }
-        .frame-container { background: #333; border: 1px solid #555; padding: 10px; border-radius: 8px; }
-        h4 { margin: 5px 0; font-size: 12px; color: #aaa; }
-        iframe { width: 100%; height: 250px; background: #fff; border: none; border-radius: 4px; }
+        body { font-family: sans-serif; background: #111; color: #eee; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: #222; padding: 25px; border-radius: 12px; width: 400px; text-align: center; border: 1px solid #444; }
+        input { width: 100%; padding: 12px; margin-bottom: 20px; border-radius: 6px; border: 1px solid #555; background: #000; color: #0f0; font-family: monospace; font-size: 18px; text-align: center; box-sizing: border-box; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn { 
+            background: #444; color: white; border: none; padding: 15px 5px; border-radius: 6px; 
+            cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.2s;
+            text-transform: uppercase;
+        }
+        .btn:hover { background: #666; }
+        .btn.active { background: #007bff; }
+        .btn.https.active { background: #6f42c1; }
+        .btn.port.active { background: #fd7e14; }
     </style>
 </head>
 <body>
 
-    <h2>IP Opener (Modo Compatibilidade)</h2>
-    <input type="text" id="ipInput" placeholder="Digite o IP (ex: 192.168.0.1)">
-    <button onclick="carregarFrames()">CARREGAR TUDO</button>
-
+<div class="card">
+    <h3>IP Opener (Firefox Ready)</h3>
+    <input type="text" id="ipInput" placeholder="0.0.0.0" oninput="validar()">
+    
     <div class="grid">
-        <div class="frame-container">
-            <h4>HTTP (Padrão)</h4>
-            <iframe id="f1"></iframe>
-        </div>
-        <div class="frame-container">
-            <h4>HTTPS</h4>
-            <iframe id="f2"></iframe>
-        </div>
-        <div class="frame-container">
-            <h4>HTTPS :8082</h4>
-            <iframe id="f3"></iframe>
-        </div>
-        <div class="frame-container">
-            <h4>HTTP :8082</h4>
-            <iframe id="f4"></iframe>
-        </div>
+        <button onclick="ir('http://')" id="b1" class="btn">HTTP</button>
+        <button onclick="ir('https://')" id="b2" class="btn https">HTTPS</button>
+        <button onclick="ir('https://', ':8082')" id="b3" class="btn port">HTTPS :8082</button>
+        <button onclick="ir('http://', ':8082')" id="b4" class="btn port">HTTP :8082</button>
     </div>
+    <p style="font-size: 11px; color: #888; margin-top: 15px;">Se não abrir, verifique a barra amarela de "Pop-up" no topo do Firefox.</p>
+</div>
 
-    <script>
-        function carregarFrames() {
-            let ip = document.getElementById('ipInput').value.trim();
-            ip = ip.replace(/^(https?:\/\/)/, "");
-
-            if (!ip) return alert("Insira o IP");
-
-            // Atualiza o src de cada iframe
-            document.getElementById('f1').src = "http://" + ip;
-            document.getElementById('f2').src = "https://" + ip;
-            document.getElementById('f3').src = "https://" + ip + ":8082";
-            document.getElementById('f4').src = "http://" + ip + ":8082";
+<script>
+    function validar() {
+        let ip = document.getElementById('ipInput').value.trim();
+        let btns = document.querySelectorAll('.btn');
+        if(ip.length > 6) {
+            btns.forEach(b => b.classList.add('active'));
+        } else {
+            btns.forEach(b => b.classList.remove('active'));
         }
-    </script>
+    }
+
+    function ir(protocolo, porta = "") {
+        let ip = document.getElementById('ipInput').value.trim();
+        ip = ip.replace(/^(https?:\/\/)/, ""); // Limpa o IP
+        
+        if (ip.length > 6) {
+            const url = protocolo + ip + porta;
+            // No Firefox, window.open funciona melhor se for a única ação do clique
+            window.open(url, '_blank', 'noopener,noreferrer');
+        }
+    }
+</script>
+
 </body>
 </html>
