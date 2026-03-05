@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu IP Tester</title>
+    <style>
+        body { font-family: sans-serif; background: #121212; color: #e0e0e0; padding: 20px; }
+        .container { max-width: 800px; margin: auto; }
+        .card { background: #1e1e1e; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #0056b3; }
+        .log { margin-top: 20px; background: #000; padding: 15px; border-radius: 5px; font-family: monospace; height: 300px; overflow-y: auto; border: 1px solid #333; }
+        .success { color: #4caf50; font-weight: bold; }
+        .testing { color: #ff9800; }
+        .error { color: #f44336; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Scanner de Rede Local</h2>
+    <div class="card">
+        <p>Este script testa IPs comuns com variações de HTTP, HTTPS e Porta 8082.</p>
+        <button onclick="startScan()">Iniciar Varredura</button>
+    </div>
+
+    <div class="log" id="log">Aguardando início...</div>
+</div>
+
+<script>
+    const commonIPs = ['192.168.0.1', '192.168.1.1', '10.0.0.1', '192.168.15.1'];
+    const protocols = ['http://', 'https://'];
+    const ports = ['', ':8082'];
+
+    async function testConnection(url) {
+        const logElement = document.getElementById('log');
+        const div = document.createElement('div');
+        div.className = 'testing';
+        div.innerText = `Testando: ${url}...`;
+        logElement.appendChild(div);
+
+        try {
+            // Usamos mode 'no-cors' para evitar bloqueios de segurança do navegador,
+            // embora isso limite o que podemos ler da resposta, o fato de não dar
+            // erro de rede já indica que o IP existe.
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), 3000); // Timeout de 3 seg
+
+            await fetch(url, { mode: 'no-cors', signal: controller.signal });
+            
+            div.className = 'success';
+            div.innerHTML = `[ALCANCÁVEL] <a href="${url}" target="_blank" style="color:white">${url}</a>`;
+        } catch (err) {
+            div.className = 'error';
+            div.innerText = `[FALHA] ${url}`;
+        }
+        logElement.scrollTop = logElement.scrollHeight;
+    }
+
+    async function startScan() {
+        const log = document.getElementById('log');
+        log.innerHTML = "<b>Iniciando varredura...</b><br>";
+        
+        for (let ip of commonIPs) {
+            for (let proto of protocols) {
+                for (let port of ports) {
+                    const target = `${proto}${ip}${port}`;
+                    await testConnection(target);
+                }
+            }
+        }
+        log.innerHTML += "<br><b>Varredura finalizada.</b>";
+    }
+</script>
+
+</body>
+</html>
